@@ -22,7 +22,8 @@ class GuySprite(pygame.sprite.Sprite):
         self.position = position
         self.speed = self.direction =self.height = 0
         self.k_left = self.k_right = self.k_down = self.k_up = 0
-
+        self.face = 0
+        
     def update(self,deltat):
         #SIMULATION
         self.speed += (self.k_right + self.k_left)
@@ -34,6 +35,8 @@ class GuySprite(pygame.sprite.Sprite):
         if self.speed < -self.MAX_REVERSE_SPEED:
             self.speed = -self.MAX_REVERSE_SPEED
         self.direction += (self.k_right + self.k_left)
+        if self.speed < 0:self.face=1
+        elif self.speed > 0: self.face=0
         x, y = self.position
         x += self.speed
         y += self.height
@@ -42,15 +45,17 @@ class GuySprite(pygame.sprite.Sprite):
         self.index += 1
         if self.index >= len(self.images):
             self.index = 0
-        if self.speed == 0: self.src_image = pygame.image.load('./assets/guystand.png')
+        if self.speed == 0:
+            self.src_image = pygame.image.load('./assets/guystand.png')
+            if (self.face == 1): self.src_image = pygame.transform.flip(self.src_image,1,0)
         elif self.speed < 0: self.src_image = pygame.transform.flip(self.images[self.index],1,0)
         else: self.src_image = self.images[self.index]
         self.image = self.src_image
         self.rect = self.image.get_rect()
         self.rect.center = self.position
         #print(str(self.k_up)+","+str(self.k_right)+","+str(self.k_left))
-
-#CREATE A CAR AND RUN
+        
+#CREATE GUY AND RUN
 rect = screen.get_rect()
 guy = GuySprite('./assets/barrell.png',rect.center)
 guy_group = pygame.sprite.RenderPlain(guy)
